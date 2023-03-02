@@ -23,7 +23,7 @@ def payment_completed(order_id):
     # generate PDF
     html = render_to_string('orders/order/pdf.html', {'order': order})
     out = BytesIO()
-    stylesheets = [weasyprint.CSS(settings.STATIC_ROOT / 'css.pdf.css')]
+    stylesheets = [weasyprint.CSS(settings.STATIC_ROOT / 'css/pdf.css')]
     weasyprint.HTML(string=html).write_pdf(out, stylesheets=stylesheets)
 
     # attach PDF file
