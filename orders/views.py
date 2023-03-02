@@ -1,8 +1,13 @@
-from django.shortcuts import render
-from .models import OrderItem
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import OrderItem, Order
 from .forms import OrderCreateForm
 from cart.cart import Cart
 from .tasks import order_created
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import weasyprint
 
 # Create your views here.
 
@@ -21,11 +26,35 @@ def order_create(request):
             cart.clear()
             # launch asynchronous task
             order_created.delay(order.id)
-        context = {'order': order}
-        template_name = 'orders/order/created.html'
-        return render(request, template_name, context)
+            # set the order in the session
+            request.session['order_id'] = order.id
+            # redirect for payment
+            return redirect('payment:process')
+        # context = {'order': order}
+        # template_name = 'orders/order/created.html'
+        # return render(request, template_name, context)
     else:
         form = OrderCreateForm()
     template_name = 'orders/order/create.html'
     context = {'cart': cart, 'form': form}
     return render(request, template_name, context)
+
+
+@staff_member_required
+def admin_order_detail(request, order_id):
+    template_name = 'admin/orders/order/detail.html'
+    order = get_object_or_404(Order, id=order_id)
+    context = {'order': order}
+    return render(request, template_name, context)
+
+
+@staff_member_required
+def admin_order_pdf(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    html = render_to_string('orders/order/pdf.html', {'order': order})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=order_{order.id}.pdf'
+    weasyprint.HTML(string=html).write_pdf(response, stylesheets=[weasyprint.CSS(
+        settings.STATIC_ROOT / 'css/pdf.css'
+    )])
+    return response
