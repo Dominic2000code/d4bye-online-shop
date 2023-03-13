@@ -15,6 +15,8 @@ click-repl==0.2.0
 cssselect2==0.7.0
 Deprecated==1.2.13
 Django==4.1.7
+django-parler==2.3
+django-rosetta==0.9.8
 flower==1.1.0
 fonttools==4.38.0
 html5lib==1.1
@@ -23,6 +25,7 @@ idna==3.4
 kombu==5.2.4
 packaging==23.0
 Pillow==9.2.0
+polib==1.2.0
 prometheus-client==0.16.0
 prompt-toolkit==3.0.38
 pycodestyle==2.10.0
