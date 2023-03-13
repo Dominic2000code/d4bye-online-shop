@@ -46,6 +46,15 @@ stripe login
 stripe listen --forward-to localhost:8000/payment/webhook/
 ```
 
+### Internationalization
+
+- Gettext
+
+```bash
+brew install gettext
+brew link --force gettext
+```
+
 - You must have weasyprint installed locally on device <https://doc.courtbouillon.org/weasyprint/stable/first_steps.html>
 
 The site will be available at <http://127.0.0.1:8000/>
